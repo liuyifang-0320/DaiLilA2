@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>致黛利拉</title>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-image: url('https://i.postimg.cc/BvXyzGM4/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            text-align: center;
+            overflow: hidden;
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+
+        /* 滑入滑出效果的语录框 */
+        .quote-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 450px;
+            color: #f0e68c;
+            font-size: 1.5rem;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 1s ease-in-out;
+            z-index: 2;
+            border: 2px solid #f0e68c;
+            box-shadow: 0 0 15px rgba(255, 223, 0, 0.8);
+            font-family: 'Garamond', serif;
+        }
+
+        .quote-box.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) translateX(0);
+        }
+
+        .quote-box.left {
+            transform: translate(-50%, -50%) translateX(-100%);
+        }
+
+        .quote-box.right {
+            transform: translate(-50%, -50%) translateX(100%);
+        }
+
+        /* 音乐播放提示 */
+        .play-hint {
+            font-size: 0.9rem;
+            margin-top: 15px;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .meteor {
+            position: fixed;
+            top: -10px;
+            width: 2px;
+            height: 80px;
+            background: linear-gradient(-45deg, gold, transparent);
+            opacity: 0.8;
+            transform: rotate(45deg);
+            animation: fall 2s linear forwards;
+            z-index: 0;
+        }
+        @keyframes fall {
+            0% {
+                transform: translate(0, 0) rotate(45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-100vw, 100vh) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <h1>黛利拉</h1>
+        <audio id="bgMusic" loop>
+            <source src="https://raw.githubusercontent.com/liuyifang-0320/Apeach2/main/%E4%BB%BB%E7%84%B6%3B%20%E5%B0%8F%E6%9D%A5%20-%20%E9%9B%80%E8%B7%83.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- 语录框 -->
+    <div class="quote-box left">“黛利拉，记住，有爱，就会归来”</div>
+    <div class="quote-box right">“凭此船票，无限登船”</div>
+    <div class="quote-box left">“小黛值得世间一切美好的东西”</div>
+    <div class="quote-box right">“医生，我们接受治疗！”</div>
+    <div class="quote-box left">“你好，我叫黛利拉，是个杀手。”</div>
+    <div class="quote-box right">“我叫阿奇，是个小偷。”</div>
+    <div class="quote-box left">“你若活着，我是你的江声浩荡，若你离去，我是你的死水微澜。”</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('bgMusic');
+            const hint = document.querySelector('.play-hint');
+            let isPlaying = false;
+
+            document.body.addEventListener('click', function() {
+                if (!isPlaying) {
+                    audio.play().then(() => {
+                        hint.textContent = "音乐播放中...";
+                        setTimeout(() => hint.style.opacity = 0, 2000);
+                        isPlaying = true;
+                    }).catch(e => {
+                        hint.textContent = "播放失败，请再试一次";
+                        console.error('播放错误:', e);
+                    });
+                } else {
+                    audio.pause();
+                    hint.textContent = "已停止播放";
+                    hint.style.opacity = 1;
+                    isPlaying = false;
+                }
+            });
+
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                hint.textContent = "轻点屏幕播放音乐";
+            }
+
+            // 添加金色流星雨效果（高密度）
+            function createMeteor() {
+                const meteor = document.createElement('div');
+                meteor.className = 'meteor';
+                meteor.style.left = Math.random() * window.innerWidth + 'px';
+                document.body.appendChild(meteor);
+
+                setTimeout(() => {
+                    meteor.remove();
+                }, 2000);
+            }
+
+            setInterval(createMeteor, 100); // 降低间隔以提升密度
+
+            // 显示滑入滑出语录框
+            const quoteBoxes = document.querySelectorAll('.quote-box');
+            let index = 0;
+            function showQuotes() {
+                if (index < quoteBoxes.length) {
+                    quoteBoxes[index].classList.add('show');
+                    setTimeout(() => {
+                        quoteBoxes[index].classList.remove('show');
+                        index++;
+                        showQuotes();
+                    }, 4000); // 每个语录显示4秒
+                }
+            }
+            showQuotes();
+        });
+    </script>
+</body>
+</html>
+
